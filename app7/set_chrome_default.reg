@@ -1,0 +1,25 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\.html]
+@="ChromeHTML"
+"Content Type"="text/html"
+"PerceivedType"="text"
+
+[HKEY_CURRENT_USER\Software\Classes\.htm]
+@="ChromeHTML"
+"Content Type"="text/html"
+"PerceivedType"="text"
+
+[HKEY_CURRENT_USER\Software\Classes\ChromeHTML]
+@="Chrome HTML Document"
+
+[HKEY_CURRENT_USER\Software\Classes\ChromeHTML\DefaultIcon]
+@="C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe,0"
+
+[HKEY_CURRENT_USER\Software\Classes\ChromeHTML\shell]
+
+[HKEY_CURRENT_USER\Software\Classes\ChromeHTML\shell\open]
+
+[HKEY_CURRENT_USER\Software\Classes\ChromeHTML\shell\open\command]
+@="\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" \"%1\""
+

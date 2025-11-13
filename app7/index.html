@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бросить курить - Трекер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+            color: #666;
+        }
+
+        .tab:hover {
+            background: #e8e8e8;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Календарь */
+        .calendar-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .calendar-nav {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+        }
+
+        .calendar-nav:hover {
+            background: #5568d3;
+        }
+
+        .calendar-month {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-day-name {
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: white;
+            font-weight: 500;
+        }
+
+        .calendar-day:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .calendar-day.other-month:hover {
+            transform: none;
+        }
+
+        .calendar-day.checked {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .calendar-day.checked::after {
+            content: '✓';
+            position: absolute;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .calendar-day.today {
+            border-color: #ff6b6b;
+            border-width: 3px;
+        }
+
+        /* Статистика */
+        .stats-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .stats-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .stats-header h2 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .timer-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .timer-display h3 {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .timer-numbers {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .timer-item {
+            text-align: center;
+        }
+
+        .timer-value {
+            font-size: 3em;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .timer-label {
+            font-size: 1em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .achievement-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .achievement-card.unlocked {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .achievement-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .achievement-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .start-date-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .start-date-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .date-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .date-input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .save-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-weight: 600;
+        }
+
+        .save-btn:hover {
+            background: #5568d3;
+        }
+
+        .info-text {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .timer-numbers {
+                gap: 15px;
+            }
+
+            .timer-value {
+                font-size: 2em;
+            }
+
+            .calendar-grid {
+                gap: 5px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚭 Бросить курить</h1>
+            <p>Твой путь к здоровой жизни</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('calendar')">Календарь</button>
+            <button class="tab" onclick="switchTab('stats')">Статистика</button>
+        </div>
+
+        <div id="calendar-tab" class="tab-content active">
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button class="calendar-nav" onclick="changeMonth(-1)">← Предыдущий</button>
+                    <div class="calendar-month" id="current-month"></div>
+                    <button class="calendar-nav" onclick="changeMonth(1)">Следующий →</button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
+            </div>
+        </div>
+
+        <div id="stats-tab" class="tab-content">
+            <div class="stats-container">
+                <div class="start-date-section">
+                    <h3>📅 Дата последней сигареты</h3>
+                    <div class="date-input-group">
+                        <input type="date" id="start-date" class="date-input">
+                        <button class="save-btn" onclick="saveStartDate()">Сохранить</button>
+                    </div>
+                    <div class="info-text" id="start-date-info"></div>
+                </div>
+
+                <div class="timer-display">
+                    <h3>⏱️ Время без курения</h3>
+                    <div class="timer-numbers">
+                        <div class="timer-item">
+                            <div class="timer-value" id="days">0</div>
+                            <div class="timer-label">Дней</div>
+                        </div>
+                        <div class="timer-item">
+                            <div class="timer-value" id="hours">0</div>
+                            <div class="timer-label">Часов</div>
+                        </div>
+                        <div class="timer-item">
+                            <div class="timer-value" id="minutes">0</div>
+                            <div class="timer-label">Минут</div>
+                        </div>
+                        <div class="timer-item">
+                            <div class="timer-value" id="seconds">0</div>
+                            <div class="timer-label">Секунд</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="achievements">
+                    <div class="achievement-card" id="day1">
+                        <div class="achievement-icon">🌱</div>
+                        <div class="achievement-title">Первый день</div>
+                        <div class="achievement-desc">1 день без курения</div>
+                    </div>
+                    <div class="achievement-card" id="day7">
+                        <div class="achievement-icon">⭐</div>
+                        <div class="achievement-title">Неделя</div>
+                        <div class="achievement-desc">7 дней без курения</div>
+                    </div>
+                    <div class="achievement-card" id="day30">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-title">Месяц</div>
+                        <div class="achievement-desc">30 дней без курения</div>
+                    </div>
+                    <div class="achievement-card" id="day100">
+                        <div class="achievement-icon">💎</div>
+                        <div class="achievement-title">Сотня</div>
+                        <div class="achievement-desc">100 дней без курения</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные приложения
+        let currentDate = new Date();
+        let checkedDays = JSON.parse(localStorage.getItem('checkedDays') || '{}');
+        let startDate = localStorage.getItem('startDate');
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCalendar();
+            if (startDate) {
+                document.getElementById('start-date').value = startDate;
+                updateStartDateInfo();
+            }
+            updateTimer();
+            setInterval(updateTimer, 1000);
+            updateAchievements();
+        });
+
+        // Переключение вкладок
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Календарь
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            const monthNames = [
+                'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+            ];
+            
+            document.getElementById('current-month').textContent = 
+                `${monthNames[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+            
+            const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            // Заголовки дней недели
+            dayNames.forEach(day => {
+                const dayNameEl = document.createElement('div');
+                dayNameEl.className = 'calendar-day-name';
+                dayNameEl.textContent = day;
+                grid.appendChild(dayNameEl);
+            });
+
+            // Пустые ячейки для дней предыдущего месяца
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day other-month';
+                grid.appendChild(emptyDay);
+            }
+
+            // Дни текущего месяца
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                dayEl.textContent = day;
+                
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                if (checkedDays[dateKey]) {
+                    dayEl.classList.add('checked');
+                }
+                
+                if (year === today.getFullYear() && 
+                    month === today.getMonth() && 
+                    day === today.getDate()) {
+                    dayEl.classList.add('today');
+                }
+                
+                dayEl.addEventListener('click', () => toggleDay(dateKey, dayEl));
+                grid.appendChild(dayEl);
+            }
+        }
+
+        function toggleDay(dateKey, element) {
+            if (checkedDays[dateKey]) {
+                delete checkedDays[dateKey];
+                element.classList.remove('checked');
+            } else {
+                checkedDays[dateKey] = true;
+                element.classList.add('checked');
+            }
+            localStorage.setItem('checkedDays', JSON.stringify(checkedDays));
+            updateAchievements();
+        }
+
+        function changeMonth(direction) {
+            currentDate.setMonth(currentDate.getMonth() + direction);
+            renderCalendar();
+        }
+
+        // Статистика
+        function saveStartDate() {
+            const dateInput = document.getElementById('start-date').value;
+            if (dateInput) {
+                startDate = dateInput;
+                localStorage.setItem('startDate', startDate);
+                updateStartDateInfo();
+                updateTimer();
+                updateAchievements();
+            }
+        }
+
+        function updateStartDateInfo() {
+            if (startDate) {
+                const date = new Date(startDate);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('start-date-info').textContent = 
+                    `Дата установлена: ${date.toLocaleDateString('ru-RU', options)}`;
+            }
+        }
+
+        function updateTimer() {
+            if (!startDate) {
+                document.getElementById('days').textContent = '0';
+                document.getElementById('hours').textContent = '0';
+                document.getElementById('minutes').textContent = '0';
+                document.getElementById('seconds').textContent = '0';
+                return;
+            }
+
+            const start = new Date(startDate);
+            const now = new Date();
+            const diff = now - start;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+
+        function updateAchievements() {
+            if (!startDate) return;
+
+            const start = new Date(startDate);
+            const now = new Date();
+            const diff = now - start;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+            // Подсчет отмеченных дней
+            const checkedCount = Object.keys(checkedDays).length;
+
+            // Разблокировка достижений
+            if (days >= 1 || checkedCount >= 1) {
+                document.getElementById('day1').classList.add('unlocked');
+            }
+            if (days >= 7 || checkedCount >= 7) {
+                document.getElementById('day7').classList.add('unlocked');
+            }
+            if (days >= 30 || checkedCount >= 30) {
+                document.getElementById('day30').classList.add('unlocked');
+            }
+            if (days >= 100 || checkedCount >= 100) {
+                document.getElementById('day100').classList.add('unlocked');
+            }
+        }
+    </script>
+</body>
+</html>
